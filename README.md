@@ -21,7 +21,7 @@ Current repository is a ROS wrapper which incorporates those features.
     ```
     sudo pip install pocketsphinx
     ```
-3) Download and copy the hub4wsj_sc_8k language model  to /usr/share/pocketsphinx/model/hmm/en_US/. It can be found here: https://sourceforge.net/projects/cmusphinx/files/Acoustic and Language Models/Archive/US English HUB4WSJ Acoustic Model/
+3) Download and copy the hub4wsj_sc_8k language model  to /usr/share/pocketsphinx/model/hmm/en_US/. It can be found [here](https://sourceforge.net/projects/cmusphinx/files/Acoustic%20and%20Language%20Models/Archive/US%20English%20HUB4WSJ%20Acoustic%20Model/)
 
 ## Usage
 ``` 
