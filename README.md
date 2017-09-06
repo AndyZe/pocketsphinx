@@ -1,7 +1,10 @@
 # Modified ROS wrapper for pocketsphinx  
-Original repository: https://github.com/mikeferguson/pocketsphinx  
+
+The following repositories were used in our wrapper, but are not required for installation:
+
+* Original repository: https://github.com/mikeferguson/pocketsphinx  
   
-Also used repo: https://github.com/gorinars/ros_voice_control  
+* Also used repo: https://github.com/gorinars/ros_voice_control  
 
 It uses up-to-date pocketsphinx features and is independent of most external dependencies.  
   
