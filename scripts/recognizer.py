@@ -29,6 +29,7 @@ class recognizer(object):
         self._lm_param = "~lm"
         self._dict_param = "~dict"
         self._kws_param = "~kws"
+        self._stream_param = "~stream"
 
         # you may need to change publisher destination depending on what you run
         self.pub_ = rospy.Publisher('~output', String, queue_size=1)
@@ -51,6 +52,11 @@ class recognizer(object):
         else:
             rospy.logerr('kws cant run. Please add an appropriate keyword list file.')
             return
+        if rospy.has_param(self._stream_param):
+            self.is_stream = rospy.get_param(self._stream_param)
+        else:
+            rospy.logerr('Audio is not set to a stream (true) or wav file (false).')
+            self.is_stream = rospy.get_param(self._stream_param)
         self.start_recognizer()
 
     def start_recognizer(self):
@@ -68,28 +74,39 @@ class recognizer(object):
 
         rospy.loginfo("Opening the audio channel")
 
+        if not self.is_stream:
+            self.decoder = Decoder(config)
+            f = open('/home/selma/throatfiles/throattest_earphonein_iphone.wav', 'r')
+            if f.mode == 'r':
+                data = f.read()
+            self.decoder.start_utt()
+            self.decoder.process_raw(data, False, False)
+#            self.decoder.end_utt()
+            self.publish_result()
+
+        else:
 	# Pocketsphinx requires 16kHz, mono, 16-bit little-Endian audio.
 	# See http://cmusphinx.sourceforge.net/wiki/tutorialtuning
-        stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=1,
-                        rate=16000, input=True, frames_per_buffer=1024)
-        stream.start_stream()
-        rospy.loginfo("Done opening the audio channel")
+            stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=1,
+                            rate=16000, input=True, frames_per_buffer=1024)
+            stream.start_stream()
+            rospy.loginfo("Done opening the audio channel")
 
-        #decoder streaming data
-        rospy.loginfo("Starting the decoder")
-        self.decoder = Decoder(config)
-        self.decoder.start_utt()
-        rospy.loginfo("Done starting the decoder")
-
-        # Main loop
-        while not rospy.is_shutdown():
-            # taken as is from python wrapper
-            buf = stream.read(1024)
-            if buf:
-                self.decoder.process_raw(buf, False, False)
-            else:
-                break
-            self.publish_result()
+            #decoder streaming data
+            rospy.loginfo("Starting the decoder")
+            self.decoder = Decoder(config)
+            self.decoder.start_utt()
+            rospy.loginfo("Done starting the decoder")
+            
+            # Main loop
+            while not rospy.is_shutdown():
+                # taken as is from python wrapper
+                buf = stream.read(1024)
+                if buf:
+                    self.decoder.process_raw(buf, False, False)
+                else:
+                    break
+                self.publish_result()
 
     def publish_result(self):
         """
