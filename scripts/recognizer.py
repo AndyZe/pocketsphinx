@@ -74,10 +74,10 @@ class recognizer(object):
 
         rospy.loginfo("Opening the audio channel")
 
-        if self.is_stream:
+        if not self.is_stream:
             self.decoder = Decoder(config)
             self.decoder.start_utt()
-            wavFile = open('/home/user/throatfiles/tmkw2-16000.wav', 'rb')
+            wavFile = open('/home/selma/throatfiles/tmkw2-16000.wav', 'rb')
             # Update the file link above with relevant username and file
             # location
             in_speech_bf = False
@@ -90,7 +90,8 @@ class recognizer(object):
             self.decoder.end_utt()
             hypothesis = self.decoder.hyp()
             if hypothesis == None:
-                print "Error, make sure your wav file is composed of keywords!!"
+                rospy.logwarn("Error, make sure your wav file is composed of keywords!!")
+                rospy.logwarn("Otherwise, your speech is uninterpretable :C ")
             else:
                 print hypothesis.hypstr
 
