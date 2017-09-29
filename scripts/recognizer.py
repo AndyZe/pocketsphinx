@@ -67,23 +67,33 @@ class recognizer(object):
 
         # Hidden Markov model: The model which has been used
         config.set_string('-hmm', self.lm)
-        #Pronunciation dictionary used
+        # Pronunciation dictionary used
         config.set_string('-dict', self.lexicon)
-        #Keyword list file for keyword searching
+        # Keyword list file for keyword searching
         config.set_string('-kws', self.kw_list)
 
         rospy.loginfo("Opening the audio channel")
 
-        if not self.is_stream:
+        if self.is_stream:
             self.decoder = Decoder(config)
-            f = open('/home/selma/throatfiles/throattest_earphonein_iphone.wav', 'r')
-            if f.mode == 'r':
-                data = f.read()
             self.decoder.start_utt()
-            self.decoder.process_raw(data, False, False)
-#           self.decoder.end_utt()
-            self.publish_result()
-           
+            wavFile = open('/home/user/throatfiles/tmkw2-16000.wav', 'rb')
+            # Update the file link above with relevant username and file
+            # location
+            in_speech_bf = False
+            while True:
+                buf = wavFile.read(1024)
+                if buf:
+                    self.decoder.process_raw(buf, False, False)
+                else:
+                    break
+            self.decoder.end_utt()
+            hypothesis = self.decoder.hyp()
+            if hypothesis == None:
+                print "Error, make sure your wav file is composed of keywords!!"
+            else:
+                print hypothesis.hypstr
+
         else:
 	    # Pocketsphinx requires 16kHz, mono, 16-bit little-Endian audio.
 	    # See http://cmusphinx.sourceforge.net/wiki/tutorialtuning
@@ -113,7 +123,7 @@ class recognizer(object):
         Publish the words
         """
         if self.decoder.hyp() != None:
-            print ([(seg.word)
+            print ([(seg.word) 
                 for seg in self.decoder.seg()])
             seg.word = seg.word.lower()
             self.decoder.end_utt()
