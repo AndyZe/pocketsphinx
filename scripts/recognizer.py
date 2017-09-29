@@ -2,6 +2,7 @@
 
 import argparse
 import rospy
+import signal
 
 from geometry_msgs.msg import Twist
 
@@ -30,6 +31,7 @@ class recognizer(object):
         self._dict_param = "~dict"
         self._kws_param = "~kws"
         self._stream_param = "~stream"
+        self._wavpath_param = "~wavpath"
 
         # you may need to change publisher destination depending on what you run
         self.pub_ = rospy.Publisher('~output', String, queue_size=1)
@@ -54,9 +56,17 @@ class recognizer(object):
             return
         if rospy.has_param(self._stream_param):
             self.is_stream = rospy.get_param(self._stream_param)
+            if not self.is_stream:
+                if rospy.has_param(self._wavpath_param):
+                    self.wavpath = rospy.get_param(self._wavpath_param)
+                    if self.wavpath == "none":
+                        rospy.logerr('Please set the wav path to the correct file location')
+                else:
+                    rospy.logerr('No wav file is set')
         else:
             rospy.logerr('Audio is not set to a stream (true) or wav file (false).')
             self.is_stream = rospy.get_param(self._stream_param)
+
         self.start_recognizer()
 
     def start_recognizer(self):
@@ -77,11 +87,15 @@ class recognizer(object):
         if not self.is_stream:
             self.decoder = Decoder(config)
             self.decoder.start_utt()
-            wavFile = open('/home/selma/throatfiles/tmkw2-16000.wav', 'rb')
+            try:
+                wavFile = open(self.wavpath, 'rb')
+            except:
+                rospy.logerr('Please set the wav path to the correct location from the pocketsphinx launch file')
+                rospy.signal_shutdown()
             # Update the file link above with relevant username and file
             # location
             in_speech_bf = False
-            while True:
+            while not rospy.is_shutdown():
                 buf = wavFile.read(1024)
                 if buf:
                     self.decoder.process_raw(buf, False, False)
@@ -137,8 +151,6 @@ class recognizer(object):
         """
         rospy.loginfo("Stopping PocketSphinx")
 
-
 if __name__ == "__main__":
     if len(sys.argv) > 0:
         start = recognizer()
-
