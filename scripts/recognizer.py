@@ -3,8 +3,6 @@
 import argparse
 import rospy
 
-from geometry_msgs.msg import Twist
-
 from pocketsphinx.pocketsphinx import *
 from sphinxbase.sphinxbase import *
 import pyaudio
@@ -20,7 +18,6 @@ class recognizer(object):
 
         # initialize ROS
         self.speed = 0.2
-        self.msg = Twist()
 
         # Start node
         rospy.init_node("recognizer")
