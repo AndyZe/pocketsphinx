@@ -29,6 +29,18 @@ Current repository is a ROS wrapper which incorporates those features.
   git clone https://github.com/UTNuclearRoboticsPublic/pocketsphinx.git  
   ```
 ## Usage
+
+### If you want to decode from a microphone stream:
+1. From pocketsphinx.launch set stream to true
+2. 
+```
+roslaunch pocketsphinx pocketsphinx.launch
+```
+
+### If you want to decode from a wav file:
+1. Fron pocketsphinx.launch set stream to false 
+2. set wavpath to the desired wav file path 
+3.
 ``` 
 roslaunch pocketsphinx pocketsphinx.launch
 ```

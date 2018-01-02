@@ -2,7 +2,9 @@
 
   <arg name="_dict" value="_dict:=$(find pocketsphinx)/vocab/voice_cmd.dic" />
   <arg name="_kws" value="_kws:=$(find pocketsphinx)/vocab/voice_cmd.kwlist" />
+  <arg name="_stream" value="_stream:=false" />
+  <arg name="_wavpath" value="_wavpath:=none" />
 
-  <node name="pocketsphinx_recognizer" pkg="pocketsphinx" type="recognizer.py" output="screen" args="$(arg _dict) $(arg _kws)" />
+  <node name="pocketsphinx_recognizer" pkg="pocketsphinx" type="recognizer.py" output="screen" args="$(arg _dict) $(arg _kws) $(arg _stream) $(arg _wavpath)" />
 
 </launch>
