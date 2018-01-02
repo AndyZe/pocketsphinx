@@ -2,9 +2,6 @@
 
 import argparse
 import rospy
-import signal
-
-from geometry_msgs.msg import Twist
 
 from pocketsphinx.pocketsphinx import *
 from sphinxbase.sphinxbase import *
@@ -21,7 +18,6 @@ class recognizer(object):
 
         # initialize ROS
         self.speed = 0.2
-        self.msg = Twist()
 
         # Start node
         rospy.init_node("recognizer")
@@ -54,6 +50,7 @@ class recognizer(object):
         else:
             rospy.logerr('kws cant run. Please add an appropriate keyword list file.')
             return
+
         if rospy.has_param(self._stream_param):
             self.is_stream = rospy.get_param(self._stream_param)
             if not self.is_stream:
